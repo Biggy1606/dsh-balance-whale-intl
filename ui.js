@@ -1101,11 +1101,30 @@ function mountBalanceWhale(root) {
     const stageRect = stage.getBoundingClientRect();
     const width = notice.offsetWidth || 300;
     const height = notice.offsetHeight || 78;
-    const cardRect = widget.getBoundingClientRect();
-    let left = rect.left - stageRect.left - width - 12;
-    const cardRight = cardRect.right - stageRect.left;
-    if (left < cardRight + 8) left = stage.clientWidth - width - 12;
-    if (left < 10) left = rect.right - stageRect.left + 12;
+    const stageLeft = rect.left - stageRect.left;
+    const stageRight = rect.right - stageRect.left;
+    const roomLeft = stageLeft - 10;
+    const roomRight = stage.clientWidth - stageRight - 10;
+    const dock = companion.dataset.dock;
+    let preferRight = dock === "left" || (dock !== "right" && roomRight >= roomLeft);
+    let left = preferRight ? stageRight + 12 : stageLeft - width - 12;
+
+    // Keep the notice on the side of the character, but flip to the other side
+    // when the preferred side would leave the viewport.
+    if (preferRight && left + width > stage.clientWidth - 10) {
+      const flipped = stageLeft - width - 12;
+      if (flipped >= 10) {
+        left = flipped;
+        preferRight = false;
+      }
+    } else if (!preferRight && left < 10) {
+      const flipped = stageRight + 12;
+      if (flipped + width <= stage.clientWidth - 10) {
+        left = flipped;
+        preferRight = true;
+      }
+    }
+
     left = clamp(left, 10, Math.max(10, stage.clientWidth - width - 10));
     let top = rect.top - stageRect.top - height - 10;
     if (top < 10) top = rect.bottom - stageRect.top + 10;
