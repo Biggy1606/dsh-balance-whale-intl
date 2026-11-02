@@ -50,7 +50,7 @@ dsh plugin --profile web add github:Biggy1606/dsh-balance-whale-intl
 For a reproducible install, pin the release tag:
 
 ```sh
-dsh plugin --profile web add github:Biggy1606/dsh-balance-whale-intl#v1.8.0
+dsh plugin --profile web add github:Biggy1606/dsh-balance-whale-intl#v1.8.1
 ```
 
 ### From npm
@@ -163,4 +163,4 @@ Upstream project and original concept: [MeteorNOX/DeepSeek-Balance-Whale-Widget]
 
 ## Version
 
-`1.8.0`
+`1.8.1`

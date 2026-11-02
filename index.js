@@ -14,7 +14,7 @@ import path from 'node:path'
 import dns from 'node:dns'
 import { fileURLToPath } from 'node:url'
 
-const VERSION = '1.8.0'
+const VERSION = '1.8.1'
 const BALANCE_URL = 'https://api.deepseek.com/user/balance'
 const BALANCE_TTL_MS = 30_000
 const BALANCE_TIMEOUT_MS = 8_000

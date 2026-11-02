@@ -1,6 +1,6 @@
 {
   "name": "dsh-balance-whale-intl",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "English-first Balance Whale widget for the DSH Web UI: live wallet balance, real token usage, turn costs, sounds, and an English/Simplified Chinese settings panel.",
   "keywords": [
     "dsh",
