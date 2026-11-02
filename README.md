@@ -4,9 +4,9 @@
 
 Live wallet balance, real token usage, per-turn cost estimates, sounds, and a draggable card — with **English as the default language** and **简体中文** included.
 
-![Balance Whale in English](./preview.png)
+![Balance Whale in English](https://raw.githubusercontent.com/Biggy1606/dsh-balance-whale-intl/main/preview.png)
 
-![Balance Whale in Simplified Chinese](./preview-zh.png)
+![Balance Whale in Simplified Chinese](https://raw.githubusercontent.com/Biggy1606/dsh-balance-whale-intl/main/preview-zh.png)
 
 ## Why this fork
 
