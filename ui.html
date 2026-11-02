@@ -1,0 +1,538 @@
+<div class="bw-page" lang="en">
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <defs>
+      <clipPath id="whale-body-clip">
+        <path d="M22 72 C22 52 40 38 62 38 C82 38 98 48 104 62 C108 72 104 84 92 91 C78 98 52 98 36 90 C27 86 22 80 22 72 Z"/>
+      </clipPath>
+
+      <symbol id="whale" viewBox="0 0 120 120">
+        <g fill="var(--whale-body, #79CDBB)">
+          <path d="M26 66 C14 60 8 52 6 42 C16 46 28 54 35 63 Z"/>
+          <path d="M26 76 C14 82 8 90 8 100 C18 96 30 88 37 79 Z"/>
+          <path d="M22 72 C22 52 40 38 62 38 C82 38 98 48 104 62 C108 72 104 84 92 91 C78 98 52 98 36 90 C27 86 22 80 22 72 Z"/>
+        </g>
+        <g clip-path="url(#whale-body-clip)">
+          <ellipse cx="64" cy="88" rx="38" ry="14" fill="var(--whale-belly, #C9EFE4)"/>
+        </g>
+        <path d="M58 80 C50 86 46 94 48 100 C56 96 62 90 66 84 Z" fill="var(--whale-fin, #56B7A4)"/>
+        <circle cx="82" cy="60" r="3.6" fill="var(--whale-eye, #08222A)"/>
+        <circle cx="83.2" cy="58.8" r="1.2" fill="var(--whale-glint, #F3EDE2)"/>
+        <path d="M88 78 q7 2 11 -3" fill="none" stroke="var(--whale-eye, #08222A)" stroke-width="2.4" stroke-linecap="round"/>
+      </symbol>
+
+      <symbol id="i-close" viewBox="0 0 20 20">
+        <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M5.5 5.5l9 9M14.5 5.5l-9 9"/>
+        </g>
+      </symbol>
+      <symbol id="i-refresh" viewBox="0 0 20 20">
+        <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 10a6 6 0 1 1-1.8-4.3"/>
+          <path d="M16 4v4h-4"/>
+        </g>
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 20 20">
+        <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M10 4v12M4 10h12"/>
+        </g>
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 20 20">
+        <path d="M15.6 12.2A6.5 6.5 0 0 1 7.8 4.4a6.5 6.5 0 1 0 7.8 7.8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="i-lock" viewBox="0 0 20 20">
+        <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="9" width="10" height="7" rx="2"/>
+          <path d="M7.5 9V7a2.5 2.5 0 0 1 5 0v2"/>
+        </g>
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 20 20">
+        <path d="M4 10.5l4 4L16 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="i-target" viewBox="0 0 20 20">
+        <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="10" cy="10" r="5.5"/>
+          <path d="M10 2v4M10 14v4M2 10h4M14 10h4"/>
+        </g>
+      </symbol>
+      <symbol id="i-play" viewBox="0 0 20 20">
+        <path d="M8 5.6l6.8 4.4-6.8 4.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 20 20">
+        <path d="M5.5 8l4.5 4.5L14.5 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="i-grip" viewBox="0 0 20 20">
+        <g fill="currentColor">
+          <circle cx="7" cy="7" r="1.05"/><circle cx="13" cy="7" r="1.05"/>
+          <circle cx="7" cy="10" r="1.05"/><circle cx="13" cy="10" r="1.05"/>
+          <circle cx="7" cy="13" r="1.05"/><circle cx="13" cy="13" r="1.05"/>
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="stage is-open" id="stage">
+
+
+    <section class="widget" id="widget" role="region" aria-labelledby="brand-title" tabindex="-1">
+      <header class="titlebar" title="Drag to move · double-click to center">
+        <span class="brand-badge" aria-hidden="true">
+          <svg class="whale whale--badge" viewBox="0 0 120 120"><use href="#whale"/></svg>
+        </span>
+        <div class="brand-copy">
+          <h1 class="brand-name" id="brand-title">Balance Whale</h1>
+          <p class="brand-sub">DeepSeek wallet</p>
+        </div>
+        <button class="icon-btn close-btn" id="close-widget" type="button" aria-label="Close Balance Whale popup">
+          <svg class="od-icon od-icon--18" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+      </header>
+
+      <div class="tabbar" id="tabbar" data-active="wallet" role="tablist" aria-label="Balance Whale view">
+        <button class="tab is-active" id="tab-wallet" type="button" role="tab" aria-selected="true" aria-controls="panel-wallet" tabindex="0" data-tab="wallet">Wallet</button>
+        <button class="tab" id="tab-settings" type="button" role="tab" aria-selected="false" aria-controls="panel-settings" tabindex="-1" data-tab="settings">Settings</button>
+        <span class="tab-indicator" aria-hidden="true"></span>
+      </div>
+
+      <div class="views">
+        <section class="view" id="panel-wallet" role="tabpanel" aria-labelledby="tab-wallet" tabindex="0">
+          <div class="wallet">
+            <section class="hero" aria-labelledby="balance-label">
+              <div class="hero-copy">
+                <p class="eyebrow" id="balance-label">Balance</p>
+                <p class="balance"><span class="balance-cur">$</span><span class="balance-value">21.04</span></p>
+                <p class="hero-meta" id="hero-meta">DSH account, updated just now</p>
+                <p class="secondary-balances" id="secondary-balances" hidden></p>
+                <button class="btn-refresh" id="refresh" type="button" aria-label="Refresh balance">
+                  <svg class="od-icon od-icon--16" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-refresh"/></svg>
+                  <span id="refresh-label">Refresh</span>
+                </button>
+              </div>
+              <div class="hero-art" aria-hidden="true">
+                <div class="bubbles bubbles--hero">
+                  <span class="bubble bubble--lg"></span>
+                  <span class="bubble bubble--md"></span>
+                  <span class="bubble bubble--sm bubble--coral"></span>
+                </div>
+                <img class="mascot mascot--hero" src="/balance-whale/whale.png" alt="" width="610" height="610" decoding="async" draggable="false">
+              </div>
+            </section>
+
+            <section class="stats" aria-label="Spending">
+              <div class="stat od-stat">
+                <span class="stat-label">Today</span>
+                <span class="stat-value od-nowrap">$1.24</span>
+                <span class="stat-meta">231.8M tokens, 13 turns</span>
+              </div>
+              <div class="stat od-stat">
+                <span class="stat-label">This chat</span>
+                <span class="stat-value od-nowrap">$1.24</span>
+                <span class="stat-meta">231.8M tokens</span>
+              </div>
+              <div class="stat od-stat">
+                <span class="stat-label">Last turn</span>
+                <span class="stat-value od-nowrap">$0.03</span>
+                <span class="stat-meta">7.2M tokens</span>
+              </div>
+              <div class="stat od-stat">
+                <span class="stat-label">Last message</span>
+                <span class="stat-value od-nowrap">$0.0028</span>
+                <span class="stat-meta">721.1k tokens</span>
+              </div>
+            </section>
+
+            <p class="cost-note">Usage costs are list-price estimates; the balance is live.</p>
+
+            <div class="observed" id="observed">
+              <div class="observed-copy">
+                <span class="observed-label">Observed wallet spend</span>
+                <span class="observed-help">Inferred from wallet drops</span>
+              </div>
+              <span class="observed-value od-nowrap" id="observed-value">—</span>
+            </div>
+
+            <p class="offpeak">
+              <span class="offpeak-copy" id="offpeak-copy">
+                <svg class="od-icon od-icon--16" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-moon"/></svg>
+                <span id="offpeak-text">Off-peak</span>
+              </span>
+              <span class="offpeak-version od-nowrap" id="version">v1.8.0</span>
+            </p>
+          </div>
+        </section>
+
+        <section class="view" id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" tabindex="0" hidden>
+          <div class="settings" id="settings-accordion">
+            <section class="acc is-open" data-acc="appearance">
+              <h2 class="acc-heading">
+                <button class="acc-trigger" id="acc-appearance-btn" type="button" aria-expanded="true" aria-controls="acc-appearance">
+                  <span>Appearance</span>
+                  <svg class="od-icon od-icon--18 acc-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-plus"/></svg>
+                </button>
+              </h2>
+              <div class="acc-body" id="acc-appearance" role="region" aria-labelledby="acc-appearance-btn">
+                <div class="preview" aria-hidden="true">
+                  <p class="preview-label">DSniang</p>
+                  <p class="preview-sub">DeepSeek mascot</p>
+                  <div class="preview-stage">
+                    <span class="preview-bubble preview-bubble--lg"></span>
+                    <span class="preview-bubble preview-bubble--sm"></span>
+                    <span class="preview-bob"><span class="preview-figure"><img class="mascot" src="/balance-whale/whale.png" alt="" width="610" height="610" decoding="async" draggable="false"></span></span>
+                  </div>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-language">Language</label>
+                    <p class="setting-help" id="language-help">Language for this widget.</p>
+                  </div>
+                  <div class="select-wrap od-fixed">
+                    <select class="select" id="opt-language" aria-describedby="language-help">
+                      <option value="en">English</option>
+                      <option value="zh">简体中文</option>
+                    </select>
+                    <svg class="od-icon od-icon--14 select-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  </div>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-character">Character</label>
+                    <p class="setting-help" id="character-help">Installed from DSH.</p>
+                  </div>
+                  <div class="select-wrap od-fixed">
+                    <select class="select select--wide" id="opt-character" aria-describedby="character-help">
+                      <option value="dsniang">DSniang (default)</option>
+                      <option value="whale">Whale (icon)</option>
+                    </select>
+                    <svg class="od-icon od-icon--14 select-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  </div>
+                </div>
+
+                <div class="setting setting--stack">
+                  <div class="setting-head">
+                    <label class="setting-name" for="opt-size">Size</label>
+                    <output class="setting-value od-nowrap" id="size-value" for="opt-size">130%</output>
+                  </div>
+                  <input class="range" type="range" id="opt-size" min="80" max="160" step="5" value="130" aria-describedby="size-help">
+                  <p class="setting-help" id="size-help">Scales DSniang and this preview.</p>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-secondary">Secondary currencies</label>
+                    <p class="setting-help" id="secondary-help">Show every separate account currency.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-secondary" role="switch" aria-describedby="secondary-help">
+                    <span class="switch-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-currency">Usage currency</label>
+                    <p class="setting-help" id="currency-help">Estimated costs only; balance stays automatic.</p>
+                  </div>
+                  <div class="select-wrap od-fixed">
+                    <select class="select" id="opt-currency" aria-describedby="currency-help">
+                      <option value="auto">Auto (match wallets)</option>
+                      <option value="CNY">CNY (¥)</option>
+                      <option value="USD">USD ($)</option>
+                    </select>
+                    <svg class="od-icon od-icon--14 select-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  </div>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-animations">Animations</label>
+                    <p class="setting-help" id="animations-help">Idle motion, fades, and transitions.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-animations" role="switch" checked aria-describedby="animations-help">
+                    <span class="switch-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-glow">Glow effect</label>
+                    <p class="setting-help" id="glow-help">Soft glows, sparks, and drop shadows.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-glow" role="switch" checked aria-describedby="glow-help">
+                    <span class="switch-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section class="acc" data-acc="sound">
+              <h2 class="acc-heading">
+                <button class="acc-trigger" id="acc-sound-btn" type="button" aria-expanded="false" aria-controls="acc-sound">
+                  <span>Sound &amp; notifications</span>
+                  <svg class="od-icon od-icon--18 acc-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-plus"/></svg>
+                </button>
+              </h2>
+              <div class="acc-body" id="acc-sound" role="region" aria-labelledby="acc-sound-btn" hidden>
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-sound">Sound</label>
+                    <p class="setting-help" id="sound-help">Chimes and interface sounds.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-sound" role="switch" checked aria-describedby="sound-help">
+                    <span class="switch-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+
+                <div class="setting setting--stack">
+                  <div class="setting-head">
+                    <label class="setting-name" for="opt-volume">Volume</label>
+                    <output class="setting-value od-nowrap" id="volume-value" for="opt-volume">100%</output>
+                  </div>
+                  <input class="range" type="range" id="opt-volume" min="0" max="100" step="5" value="100">
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-press-sound">Press sound</label>
+                  </div>
+                  <div class="control-row od-fixed">
+                    <div class="select-wrap select-wrap--sm">
+                      <select class="select" id="opt-press-sound">
+                        <option value="duck">Duck</option>
+                        <option value="fx1">FX1</option>
+                        <option value="none">None</option>
+                      </select>
+                      <svg class="od-icon od-icon--14 select-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-chevron"/></svg>
+                    </div>
+                    <button class="btn-preview" type="button" data-preview="press" aria-label="Preview press sound">
+                      <svg class="od-icon od-icon--14" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-play"/></svg>
+                      <span>Preview</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-turn-sound">Turn sound</label>
+                  </div>
+                  <div class="control-row od-fixed">
+                    <div class="select-wrap select-wrap--sm">
+                      <select class="select" id="opt-turn-sound">
+                        <option value="orb">Orb</option>
+                        <option value="a">Task-end</option>
+                        <option value="cost">Cost</option>
+                        <option value="none">None</option>
+                      </select>
+                      <svg class="od-icon od-icon--14 select-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-chevron"/></svg>
+                    </div>
+                    <button class="btn-preview" type="button" data-preview="turn" aria-label="Preview turn sound">
+                      <svg class="od-icon od-icon--14" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-play"/></svg>
+                      <span>Preview</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-turn-bubble">Turn bubble</label>
+                    <p class="setting-help" id="turn-bubble-help">Show the cost beside DSniang when a turn ends.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-turn-bubble" role="switch" checked aria-describedby="turn-bubble-help">
+                    <span class="switch-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-autoclose">Auto-close</label>
+                    <p class="setting-help" id="autoclose-help">Close the popup after a turn ends.</p>
+                  </div>
+                  <div class="select-wrap od-fixed">
+                    <select class="select" id="opt-autoclose" aria-describedby="autoclose-help">
+                      <option value="never">Never</option>
+                      <option value="15">After 15 seconds</option>
+                      <option value="30">After 30 seconds</option>
+                      <option value="60">After 1 minute</option>
+                    </select>
+                    <svg class="od-icon od-icon--14 select-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="acc" data-acc="user">
+              <h2 class="acc-heading">
+                <button class="acc-trigger" id="acc-user-btn" type="button" aria-expanded="false" aria-controls="acc-user">
+                  <span>User action</span>
+                  <svg class="od-icon od-icon--18 acc-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-plus"/></svg>
+                </button>
+              </h2>
+              <div class="acc-body" id="acc-user" role="region" aria-labelledby="acc-user-btn" hidden>
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-question">Question sound</label>
+                    <p class="setting-help" id="question-help">Chime when DSH is waiting for an answer.</p>
+                  </div>
+                  <div class="control-row od-fixed">
+                    <button class="btn-preview" type="button" data-preview="question" aria-label="Preview question sound">
+                      <svg class="od-icon od-icon--14" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-play"/></svg>
+                      <span>Preview</span>
+                    </button>
+                    <label class="switch">
+                      <input type="checkbox" id="opt-question" role="switch" checked aria-describedby="question-help">
+                      <span class="switch-track" aria-hidden="true"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-approval">Approval sound</label>
+                    <p class="setting-help" id="approval-help">Chime when DSH is waiting for approval.</p>
+                  </div>
+                  <div class="control-row od-fixed">
+                    <button class="btn-preview" type="button" data-preview="approval" aria-label="Preview approval sound">
+                      <svg class="od-icon od-icon--14" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-play"/></svg>
+                      <span>Preview</span>
+                    </button>
+                    <label class="switch">
+                      <input type="checkbox" id="opt-approval" role="switch" checked aria-describedby="approval-help">
+                      <span class="switch-track" aria-hidden="true"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-waiting">Waiting bubble</label>
+                    <p class="setting-help" id="waiting-help">Show a notice beside DSniang until you respond.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-waiting" role="switch" checked aria-describedby="waiting-help">
+                    <span class="switch-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section class="acc" data-acc="placement">
+              <h2 class="acc-heading">
+                <button class="acc-trigger" id="acc-placement-btn" type="button" aria-expanded="false" aria-controls="acc-placement">
+                  <span>Placement</span>
+                  <svg class="od-icon od-icon--18 acc-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-plus"/></svg>
+                </button>
+              </h2>
+              <div class="acc-body" id="acc-placement" role="region" aria-labelledby="acc-placement-btn" hidden>
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-snap">Snap to edges</label>
+                    <p class="setting-help" id="snap-help">Release near an edge to dock.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-snap" role="switch" checked aria-describedby="snap-help">
+                    <span class="switch-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <label class="setting-name" for="opt-mirror">Mirror at left edge</label>
+                    <p class="setting-help" id="mirror-help">Flip the character when docked left.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-mirror" role="switch" checked aria-describedby="mirror-help">
+                    <span class="switch-track" aria-hidden="true"></span>
+                  </label>
+                </div>
+
+                <div class="setting">
+                  <div class="setting-copy od-field">
+                    <span class="setting-name">Position</span>
+                    <p class="setting-help" id="position-help">Drag DSniang, or drag the card header.</p>
+                  </div>
+                  <button class="btn btn--compact od-fixed" id="reset-position" type="button" aria-describedby="position-help">
+                    <svg class="od-icon od-icon--14" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-target"/></svg>
+                    <span>Reset position</span>
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section class="acc" data-acc="about">
+              <h2 class="acc-heading">
+                <button class="acc-trigger" id="acc-about-btn" type="button" aria-expanded="false" aria-controls="acc-about">
+                  <span>About</span>
+                  <svg class="od-icon od-icon--18 acc-icon" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-plus"/></svg>
+                </button>
+              </h2>
+              <div class="acc-body" id="acc-about" role="region" aria-labelledby="acc-about-btn" hidden>
+                <div class="setting setting--plain">
+                  <span class="setting-name">Version</span>
+                  <span class="setting-value od-nowrap">1.8.0</span>
+                </div>
+                <div class="about-notes">
+                  <p>Character, icon, and sounds come from the upstream project.</p>
+                  <p>Balance is read through DSH. Keys never enter this widget.</p>
+                  <p>Usage costs are list-price estimates; display currency follows the Usage currency setting.</p>
+                  <p>Changes are saved on this device.</p>
+                </div>
+                <button class="btn btn--danger-ghost" id="restore-defaults" type="button" aria-haspopup="dialog">Restore defaults</button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </div>
+
+      <footer class="statusbar">
+        <p class="status-line">
+          <svg class="od-icon od-icon--14 status-icon" id="status-icon" viewBox="0 0 20 20" aria-hidden="true"><use id="status-icon-use" href="#i-grip"/></svg>
+          <span class="status-hint">
+            <span class="hint-desktop">Drag header or DSniang</span>
+            <span class="hint-mobile">Changes save locally</span>
+          </span>
+          <span class="status-message" id="status-message" role="status" aria-live="polite"></span>
+        </p>
+        <p class="status-right">
+          <svg class="od-icon od-icon--14" viewBox="0 0 20 20" aria-hidden="true"><use href="#i-lock"/></svg>
+          <span>Keys stay local</span>
+        </p>
+      </footer>
+    </section>
+
+    <button class="companion" id="companion" type="button" aria-controls="widget" aria-expanded="true" aria-label="Close Balance Whale popup">
+      <span class="companion-bubbles" aria-hidden="true">
+        <span class="bubble bubble--xs"></span>
+        <span class="bubble bubble--xxs bubble--coral"></span>
+      </span>
+      <span class="companion-bob" aria-hidden="true">
+        <span class="companion-figure">
+          <img class="mascot" src="/balance-whale/whale.png" alt="" width="610" height="610" decoding="async" draggable="false">
+        </span>
+      </span>
+    </button>
+
+    <div class="notice" id="notice" hidden role="status" aria-live="polite">
+      <div class="notice-copy">
+        <span class="notice-kicker" id="notice-kicker"></span>
+        <strong class="notice-title" id="notice-title"></strong>
+        <span class="notice-sub" id="notice-sub"></span>
+      </div>
+      <button class="notice-close" id="notice-close" type="button" aria-label="Dismiss notice">×</button>
+    </div>
+
+    <dialog class="dialog" id="restore-dialog" aria-labelledby="restore-title" aria-describedby="restore-desc">
+      <form method="dialog" class="dialog-card">
+        <h2 class="dialog-title" id="restore-title">Restore defaults?</h2>
+        <p class="dialog-copy" id="restore-desc">This resets appearance, sounds, placement, and currency on this device. Your language and balance are unaffected.</p>
+        <div class="dialog-actions">
+          <button class="btn btn--ghost" type="submit" value="cancel" autofocus>Cancel</button>
+          <button class="btn btn--danger" type="submit" value="confirm">Restore defaults</button>
+        </div>
+      </form>
+    </dialog>
+  </div>
+</div>
