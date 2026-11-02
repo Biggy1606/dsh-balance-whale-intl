@@ -10,7 +10,7 @@ Live wallet balance, real token usage, per-turn cost estimates, sounds, and a dr
 
 ## Why this fork
 
-The upstream [DeepSeek Balance Whale Widget](https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget) is Chinese-first: its README is Chinese-only and the shipped interface is Chinese. I built this version because I wanted the same whale-girl companion, live balance, usage view, sounds, and turn notifications in English.
+The upstream [DeepSeek Balance Whale Widget](https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget) is Chinese-first: at the version this fork is based on, its README is Chinese-only and the shipped interface is Chinese. The original does not offer an English UI, so this version exists to add one while keeping the same whale-girl companion, live balance, usage view, sounds, and turn notifications.
 
 English is the default here. Simplified Chinese remains available in **Settings → Appearance → Language**, so the widget is still usable by the original audience.
 
