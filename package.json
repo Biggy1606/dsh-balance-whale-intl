@@ -1,0 +1,65 @@
+{
+  "name": "dsh-balance-whale-intl",
+  "version": "1.8.0",
+  "description": "English-first Balance Whale widget for the DSH Web UI: live wallet balance, real token usage, turn costs, sounds, and an English/Simplified Chinese settings panel.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "deepseek",
+    "balance",
+    "wallet",
+    "desktop-pet",
+    "i18n",
+    "english",
+    "simplified-chinese"
+  ],
+  "author": "Igor Barcik",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "icon": "./icon.png",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.png"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.png",
+    "assets/*",
+    "ASSET_PROVENANCE.md",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Biggy1606/dsh-balance-whale-intl.git"
+  },
+  "homepage": "https://github.com/Biggy1606/dsh-balance-whale-intl#readme",
+  "bugs": {
+    "url": "https://github.com/Biggy1606/dsh-balance-whale-intl/issues"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout"
+      ]
+    }
+  }
+}

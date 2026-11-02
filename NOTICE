@@ -1,0 +1,50 @@
+Balance Whale Intl is an independent, English-first fork of the DSH widget.
+
+It was inspired by the behavior and feature set of
+DeepSeek-Balance-Whale-Widget by MeteorNOX:
+https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget
+
+The host-side balance resolution, DeepSeek peak/off-peak pricing model, and
+turn-usage aggregation follow the same public API contracts and pricing facts
+documented by that MIT-licensed project and by DeepSeek. The JavaScript, CSS,
+and SVG fallback in this bundle are original to this package.
+
+Artwork and audio are included from the upstream repository at the user's
+request: assets/DSniang1.png, assets/rua.gif, assets/Ya1.mp3, assets/Ya2.mp3,
+assets/D1.mp3, assets/D2.mp3, assets/cost-default.wav,
+assets/minecraft-exp-orb.wav, assets/task-end-a.wav,
+assets/ask-default.wav, assets/approve-default.wav, and icon.png.
+A transparent-padding-trimmed derivative of the character image is included as
+assets/DSniang1-trim.png; it remains under the same as-is terms. Those assets are NOT MIT-licensed by the
+upstream project; they are distributed as-is for running this plugin. See
+ASSET_PROVENANCE.md for source URLs and checksums. Do not relicense the art or
+audio under this package's MIT license.
+
+MIT License for the upstream project:
+Copyright (c) 2026 MeteorNOX
+https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget/blob/main/LICENSE
+
+Third-party MIT license
+-----------------------
+
+MIT License
+
+Copyright (c) 2026 MeteorNOX
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

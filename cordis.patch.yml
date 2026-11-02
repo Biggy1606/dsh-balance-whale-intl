@@ -1,0 +1,4 @@
+# Balance Whale — a persistent docked widget for the DSH Web UI.
+- insert:
+    - id: balance-whale-intl
+      name: 'dsh-balance-whale-intl'
