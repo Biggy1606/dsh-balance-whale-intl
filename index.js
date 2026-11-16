@@ -11,19 +11,15 @@
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import dns from 'node:dns'
 import { fileURLToPath } from 'node:url'
 
-const VERSION = '1.8.6'
+const VERSION = '1.8.7'
 const BALANCE_URL = 'https://api.deepseek.com/user/balance'
 const BALANCE_TTL_MS = 30_000
 const BALANCE_TIMEOUT_MS = 8_000
 const STATE_PATH = path.join(process.env.DSH_HOME || path.join(os.homedir(), '.dsh'), '.balance-whale.json')
 const PACKAGE_ROOT = path.dirname(fileURLToPath(import.meta.url))
 const ASSET_DIR = path.join(PACKAGE_ROOT, 'assets')
-
-// Prefer IPv4 for balance lookups, matching DSH's own outbound fetch behavior.
-try { dns.setDefaultResultOrder('ipv4first') } catch (err) {}
 
 const PRICES = {
   flash: {
