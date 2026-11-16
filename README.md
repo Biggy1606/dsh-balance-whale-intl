@@ -86,6 +86,7 @@ dsh plugin --profile web add github:Biggy1606/dsh-balance-whale-intl
 - **Tokens are real.** DSH session logs provide the input, cached, and output token counts.
 - **Costs are estimates.** They use DeepSeek list prices and do not include discounts, exchange-rate differences, or promotional pricing.
 - **Dual currency is one charge, not two.** When both wallets have been used, the same token usage is priced in CNY and USD.
+- **Peak pricing is shown in your time zone.** The peak/off-peak badge says when the price band next changes, on your own clock; DeepSeek defines its peak windows in Beijing time, so the tooltip quotes the Beijing switch when you are not in UTC+8.
 - **Observed wallet spend** is inferred from balance drops while the plugin is running. It is not retroactive and cannot attribute a charge to a specific wallet when both currencies are mixed in one turn.
 - The balance lookup uses `DEEPSEEK_API_KEY` first, then the signed-in DeepSeek account.
 
@@ -163,4 +164,4 @@ Upstream project and original concept: [MeteorNOX/DeepSeek-Balance-Whale-Widget]
 
 ## Version
 
-`1.8.2`
+`1.8.3`

@@ -2,10 +2,37 @@
  * The markup and visual system come from the OpenDesign handoff in ui.html/ui.css.
  * This controller wires that surface to the live DSH state and audio routes.
  */
+
+/* Format the next peak switch in the reader's own time zone.
+ * `nextAt` and `now` are epoch milliseconds, `language` is "en" or "zh".
+ * The day word comes from comparing LOCAL calendar days, so a DST shift can
+ * never turn "tomorrow" into a weekday. Plain Date arithmetic, no Intl: the
+ * time must stay 24-hour and zero-padded in every locale. */
+function formatUntil(nextAt, now, language) {
+  if (nextAt === null || nextAt === undefined || nextAt === "") return "";
+  const target = Number(nextAt);
+  if (!Number.isFinite(target)) return "";
+  const reference = Number(now);
+  const when = new Date(target);
+  const base = new Date(Number.isFinite(reference) ? reference : Date.now());
+  const time = String(when.getHours()).padStart(2, "0") + ":"
+    + String(when.getMinutes()).padStart(2, "0");
+  const dayNumber = (date) =>
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000;
+  const dayDelta = Math.round(dayNumber(when) - dayNumber(base));
+  if (dayDelta === 0) return time;
+  const zh = language === "zh";
+  if (dayDelta === 1) return (zh ? "明天 " : "tomorrow ") + time;
+  const WEEKDAYS = zh
+    ? ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
+    : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  return WEEKDAYS[when.getDay()] + " " + time;
+}
+
 function mountBalanceWhale(root) {
   "use strict";
 
-  const VERSION = "1.8.2";
+  const VERSION = "1.8.3";
   const STORAGE_KEY = "balance-whale.ui.v2";
   const OLD_PREFS_KEY = "balance-whale.prefs.v1";
   const OPEN_KEY = "balance-whale.open.v2";
@@ -132,6 +159,7 @@ function mountBalanceWhale(root) {
       "peak.off": "Off-peak",
       "peak.until": " · until {time}",
       "peak.weekend": " · weekend",
+      "peak.beijing": "{time} Beijing",
       "notice.turnKicker": "Turn complete · est.",
       "notice.approvalKicker": "Approval waiting",
       "notice.questionKicker": "Question waiting",
@@ -282,6 +310,7 @@ function mountBalanceWhale(root) {
       "peak.off": "低谷",
       "peak.until": " · 至 {time}",
       "peak.weekend": " · 周末",
+      "peak.beijing": "{time} 北京时间",
       "notice.turnKicker": "本轮完成 · 估算",
       "notice.approvalKicker": "等待审批",
       "notice.questionKicker": "等待回答",
@@ -348,8 +377,6 @@ function mountBalanceWhale(root) {
     icon: overrides.icon || asset("/balance-whale/icon.png"),
     press: asset("/balance-whale/press.mp3"),
     release: asset("/balance-whale/release.mp3"),
-    pressFx1: asset("/balance-whale/press-fx1.mp3"),
-    releaseFx1: asset("/balance-whale/release-fx1.mp3"),
     duck: asset("/balance-whale/press-fx1.mp3"),
     duckRelease: asset("/balance-whale/release-fx1.mp3"),
     turnOrb: asset("/balance-whale/turn-orb.wav"),
@@ -642,8 +669,6 @@ function mountBalanceWhale(root) {
     mirror: $("#opt-mirror"),
   };
 
-  let audioCtx = null;
-  const buffers = new Map();
   const media = new Map();
 
   function saveState() {
@@ -836,18 +861,6 @@ function mountBalanceWhale(root) {
     }, 2600);
   }
 
-  function ensureAudio() {
-    try {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return null;
-      audioCtx = audioCtx || new AudioContextClass();
-      if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
-      return audioCtx;
-    } catch (error) {
-      return null;
-    }
-  }
-
   function soundUrl(kind) {
     if (kind === "press") {
       return state.pressSound === "duck" ? ASSETS.duck
@@ -865,37 +878,6 @@ function mountBalanceWhale(root) {
     if (kind === "question") return ASSETS.ask;
     if (kind === "approval") return ASSETS.approve;
     return "";
-  }
-
-  function playBuffer(url, level) {
-    const ac = ensureAudio();
-    if (!ac) return;
-    const start = (buffer) => {
-      try {
-        const source = ac.createBufferSource();
-        const gain = ac.createGain();
-        source.buffer = buffer;
-        gain.gain.value = level;
-        source.connect(gain);
-        gain.connect(ac.destination);
-        source.start();
-      } catch (error) {}
-    };
-    if (buffers.has(url)) {
-      start(buffers.get(url));
-      return;
-    }
-    fetch(url, { cache: "force-cache" })
-      .then((response) => {
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        return response.arrayBuffer();
-      })
-      .then((raw) => ac.decodeAudioData(raw))
-      .then((decoded) => {
-        buffers.set(url, decoded);
-        start(decoded);
-      })
-      .catch(() => {});
   }
 
   function play(kind, options) {
@@ -922,12 +904,8 @@ function mountBalanceWhale(root) {
       item.currentTime = 0;
       item.volume = clamp(gain, 0, 1);
       const playback = item.play();
-      if (playback && typeof playback.catch === "function") {
-        playback.catch(() => playBuffer(url, gain));
-      }
-    } catch (error) {
-      playBuffer(url, gain);
-    }
+      if (playback && typeof playback.catch === "function") playback.catch(() => {});
+    } catch (error) {}
   }
 
   function previewSound(kind) {
@@ -959,7 +937,7 @@ function mountBalanceWhale(root) {
       else localStorage.removeItem(CARD_KEY);
     } catch (error) {}
   }
-  function positionCard(reset) {
+  function positionCard(reset, persist) {
     if (!panelOpen) return;
     const width = widget.offsetWidth || 404;
     const height = widget.offsetHeight || 704;
@@ -983,13 +961,19 @@ function mountBalanceWhale(root) {
     if (reset) {
       cardPos = null;
       saveCardPos(null);
-    } else if (cardPos) {
+    } else if (cardPos && persist !== false) {
+      // A resize clamp is temporary: keep the user's saved spot for a bigger window.
       cardPos = { x, y };
       saveCardPos(cardPos);
     }
   }
 
   function setPanelOpen(open, moveFocus) {
+    if (open) {
+      // A turn-end auto-close must not shut the panel the user just opened.
+      window.clearTimeout(autoCloseTimer);
+      autoCloseTimer = 0;
+    }
     if (open === panelOpen && !moveFocus) {
       widget.hidden = !open;
       stage.classList.toggle("is-open", open);
@@ -1169,12 +1153,18 @@ function mountBalanceWhale(root) {
       : [];
     if (state.secondary && balances.length > 1) {
       secondaryBalances.hidden = false;
-      secondaryBalances.innerHTML = balances.map((row) => {
-        const active = String(row.currency).toUpperCase() === String(currency).toUpperCase();
-        return '<span class="chip' + (active ? " is-primary" : "") + '"><strong>'
-          + symbolFor(row.currency) + money(row.amount, 2) + "</strong><small>"
-          + String(row.currency).toUpperCase() + "</small></span>";
-      }).join("");
+      secondaryBalances.textContent = "";
+      balances.forEach((row) => {
+        const code = String(row.currency).toUpperCase();
+        const chip = document.createElement("span");
+        chip.className = "chip" + (code === String(currency).toUpperCase() ? " is-primary" : "");
+        const amount = document.createElement("strong");
+        amount.textContent = symbolFor(row.currency) + money(row.amount, 2);
+        const unit = document.createElement("small");
+        unit.textContent = code;
+        chip.append(amount, unit);
+        secondaryBalances.append(chip);
+      });
     } else {
       secondaryBalances.hidden = true;
       secondaryBalances.textContent = "";
@@ -1230,11 +1220,30 @@ function mountBalanceWhale(root) {
     const peak = snapshot.peak || null;
     if (peak) {
       const label = t(peak.active ? "peak.peak" : "peak.off");
-      const detail = peak.nextLabel ? t("peak.until", { time: peak.nextLabel })
+      const nowMs = Number(snapshot.serverTime) || Date.now();
+      const time = formatUntil(peak.nextAt, nowMs, state.language);
+      const detail = time ? t("peak.until", { time })
         : peak.weekend ? t("peak.weekend") : "";
       offpeakText.textContent = label + detail;
+      // DeepSeek defines the windows in Beijing time, so quote that same switch
+      // on the Beijing clock whenever the reader sits in another zone.
+      const nextAtMs = Number(peak.nextAt);
+      const hasNext = peak.nextAt !== null && peak.nextAt !== undefined
+        && peak.nextAt !== "" && Number.isFinite(nextAtMs);
+      if (!hasNext || new Date(nowMs).getTimezoneOffset() === -480) {
+        offpeakText.title = "";
+      } else {
+        const beijing = new Intl.DateTimeFormat("en-GB", {
+          timeZone: "Asia/Shanghai",
+          hourCycle: "h23",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(new Date(nextAtMs));
+        offpeakText.title = t("peak.beijing", { time: beijing });
+      }
     } else {
       offpeakText.textContent = t("peak.off");
+      offpeakText.title = "";
     }
     versionEl.textContent = "v" + VERSION;
   }
@@ -1287,10 +1296,12 @@ function mountBalanceWhale(root) {
       return;
     }
     if (nextKey === dismissedWait) {
-      hideNotice();
+      // Only clear our own bubble; a turn-cost notice may be showing instead.
+      if (!notice.hidden && notice.classList.contains("is-wait")) hideNotice();
       return;
     }
-    if (state.waitingBubble) {
+    if (state.waitingBubble && (fresh || notice.hidden || !notice.classList.contains("is-wait"))) {
+      // Re-showing an unchanged wait bubble restarts its CSS animation every poll.
       showNotice({
         kind: "wait",
         kicker: t(next.kind === "approval" ? "notice.approvalKicker" : "notice.questionKicker"),
@@ -1490,11 +1501,7 @@ function mountBalanceWhale(root) {
   document.addEventListener("keydown", onKeyDown);
 
   /* Companion drag ------------------------------------------------------- */
-  const unlockAudio = () => { ensureAudio(); };
-  window.addEventListener("pointerdown", unlockAudio, { capture: true, once: true });
-
   companion.addEventListener("pointerdown", (event) => {
-    ensureAudio();
     if (event.pointerType === "mouse" && event.button !== 0) return;
     if (dragActive) return;
     dragActive = true;
@@ -1617,7 +1624,7 @@ function mountBalanceWhale(root) {
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = 0;
       positionCompanion(false);
-      positionCard(false);
+      positionCard(false, false);
       positionNotice();
     });
   };
@@ -1688,13 +1695,9 @@ function mountBalanceWhale(root) {
     document.removeEventListener("keydown", onKeyDown);
     document.removeEventListener("visibilitychange", onVisible);
     window.removeEventListener("resize", onResize);
-    window.removeEventListener("pointerdown", unlockAudio, true);
     window.removeEventListener("pointermove", onCardPointerMove);
     window.removeEventListener("pointerup", onCardPointerUp);
     window.removeEventListener("pointercancel", onCardPointerUp);
-    try {
-      if (audioCtx) audioCtx.close();
-    } catch (error) {}
     media.forEach((item) => {
       try {
         item.pause();
@@ -1702,7 +1705,6 @@ function mountBalanceWhale(root) {
       } catch (error) {}
     });
     media.clear();
-    buffers.clear();
     if (restoreDialog.open) restoreDialog.close();
   };
 }
