@@ -140,7 +140,7 @@ locale/en.json        plugin metadata (English)
 locale/zh.json        plugin metadata (Simplified Chinese)
 scripts/build.mjs     reproducible client bundler
 scripts/check.mjs     bundle and metadata checks
-assets/               character art, icon, and audio
+assets/               character art, audio, and webfonts
 preview.png           English preview
 preview-zh.png        Simplified Chinese preview
 ASSET_PROVENANCE.md   asset source, checksums, and as-is terms
@@ -157,10 +157,10 @@ Built for the DSH Web UI (`dsh plugin --profile web`). The plugin declares `dsh.
 
 The JavaScript, CSS, and this repository's own code are **MIT-licensed**. See [LICENSE](./LICENSE).
 
-The character art, icon, GIF, and sounds come from the upstream project and are redistributed **as-is**. They are **not** MIT-licensed by the upstream project; see [ASSET_PROVENANCE.md](./ASSET_PROVENANCE.md) and [NOTICE](./NOTICE). Do not relicense the art or audio under this repository's MIT license.
+The character art, icon, and sounds come from the upstream project and are redistributed **as-is**. They are **not** MIT-licensed by the upstream project; see [ASSET_PROVENANCE.md](./ASSET_PROVENANCE.md) and [NOTICE](./NOTICE). Do not relicense the art or audio under this repository's MIT license.
 
 Upstream project and original concept: [MeteorNOX/DeepSeek-Balance-Whale-Widget](https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget).
 
 ## Version
 
-`1.8.1`
+`1.8.2`

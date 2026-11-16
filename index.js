@@ -14,7 +14,7 @@ import path from 'node:path'
 import dns from 'node:dns'
 import { fileURLToPath } from 'node:url'
 
-const VERSION = '1.8.1'
+const VERSION = '1.8.2'
 const BALANCE_URL = 'https://api.deepseek.com/user/balance'
 const BALANCE_TTL_MS = 30_000
 const BALANCE_TIMEOUT_MS = 8_000
@@ -1010,8 +1010,9 @@ export function apply(ctx) {
     const type = routePath.endsWith('.png') ? 'image/png'
       : routePath.endsWith('.gif') ? 'image/gif'
         : routePath.endsWith('.mp3') ? 'audio/mpeg'
-          : routePath.endsWith('.wav') ? 'audio/wav'
-            : 'application/octet-stream'
+          : routePath.endsWith('.woff2') ? 'font/woff2'
+            : routePath.endsWith('.wav') ? 'audio/wav'
+              : 'application/octet-stream'
     return ctx.webServer.register({
       kind: 'exact',
       path: routePath,
@@ -1045,16 +1046,20 @@ export function apply(ctx) {
 
   ctx.effect(() => registerAsset('/balance-whale/whale.png', ASSET_DIR, 'DSniang1-trim.png'), 'balance-whale: whale art')
   ctx.effect(() => registerAsset('/balance-whale/icon.png', PACKAGE_ROOT, 'icon.png'), 'balance-whale: icon')
-  ctx.effect(() => registerAsset('/balance-whale/rua.gif', ASSET_DIR, 'rua.gif'), 'balance-whale: rua art')
   ctx.effect(() => registerAsset('/balance-whale/press.mp3', ASSET_DIR, 'Ya1.mp3'), 'balance-whale: press sound')
   ctx.effect(() => registerAsset('/balance-whale/release.mp3', ASSET_DIR, 'Ya2.mp3'), 'balance-whale: release sound')
-  ctx.effect(() => registerAsset('/balance-whale/turn.wav', ASSET_DIR, 'cost-default.wav'), 'balance-whale: cost sound')
   ctx.effect(() => registerAsset('/balance-whale/press-fx1.mp3', ASSET_DIR, 'D1.mp3'), 'balance-whale: press fx1 sound')
   ctx.effect(() => registerAsset('/balance-whale/release-fx1.mp3', ASSET_DIR, 'D2.mp3'), 'balance-whale: release fx1 sound')
+  ctx.effect(() => registerAsset('/balance-whale/turn.wav', ASSET_DIR, 'cost-default.wav'), 'balance-whale: cost sound')
   ctx.effect(() => registerAsset('/balance-whale/turn-orb.wav', ASSET_DIR, 'minecraft-exp-orb.wav'), 'balance-whale: turn orb sound')
   ctx.effect(() => registerAsset('/balance-whale/turn-a.wav', ASSET_DIR, 'task-end-a.wav'), 'balance-whale: turn a sound')
   ctx.effect(() => registerAsset('/balance-whale/ask.wav', ASSET_DIR, 'ask-default.wav'), 'balance-whale: ask sound')
   ctx.effect(() => registerAsset('/balance-whale/approve.wav', ASSET_DIR, 'approve-default.wav'), 'balance-whale: approval sound')
+  // Fonts are served as files, not inlined in the bundle, so the page can cache
+  // them and the client bundle stays small.
+  for (const font of ['fira-400', 'fira-500', 'fira-600', 'fira-cond-600', 'mono-400', 'mono-500']) {
+    ctx.effect(() => registerAsset(`/balance-whale/${font}.woff2`, ASSET_DIR, `${font}.woff2`), `balance-whale: font ${font}`)
+  }
 
   ensureBackfill()
 
