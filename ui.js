@@ -32,7 +32,7 @@ function formatUntil(nextAt, now, language) {
 function mountBalanceWhale(root) {
   "use strict";
 
-  const VERSION = "1.8.10";
+  const VERSION = "1.8.11";
   const STORAGE_KEY = "balance-whale.ui.v2";
   const OLD_PREFS_KEY = "balance-whale.prefs.v1";
   const OPEN_KEY = "balance-whale.open.v2";
@@ -543,6 +543,7 @@ function mountBalanceWhale(root) {
   const observedValue = $("#observed-value");
   const offpeakText = $("#offpeak-text");
   const versionEl = $("#version");
+  const aboutVersionEl = $("#about-version");
   const mascots = $$(".mascot");
 
   const TEXT_BINDINGS = [
@@ -805,6 +806,7 @@ function mountBalanceWhale(root) {
       root.host.setAttribute("lang", lang);
     }
     versionEl.textContent = "v" + VERSION;
+    if (aboutVersionEl) aboutVersionEl.textContent = VERSION;
   }
 
   function applyState() {
@@ -1238,6 +1240,7 @@ function mountBalanceWhale(root) {
       offpeakText.title = "";
     }
     versionEl.textContent = "v" + VERSION;
+    if (aboutVersionEl) aboutVersionEl.textContent = VERSION;
   }
 
   function rememberTurn(data) {

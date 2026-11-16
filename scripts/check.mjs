@@ -20,6 +20,20 @@ if (pkg.dsh?.bundle?.patch !== './cordis.patch.yml') fail('missing dsh.bundle.pa
 const patch = await read('cordis.patch.yml')
 if (!patch.includes(`name: '${pkg.name}'`)) fail('cordis.patch.yml name does not match package.json')
 
+// One version, every surface. The About row once kept a hardcoded number that a
+// release bump missed, and the widget then showed two different versions.
+if (!pkg.version) fail('package.json has no version')
+for (const [file, needle] of [
+  ['index.js', `const VERSION = '${pkg.version}'`],
+  ['ui.js', `const VERSION = "${pkg.version}"`],
+  ['ui.html', `id="version">v${pkg.version}<`],
+  ['ui.html', `id="about-version">${pkg.version}<`],
+  ['README.md', `\`${pkg.version}\``],
+]) {
+  const source = await read(file)
+  if (!source.includes(needle)) fail(`${file} does not carry version ${pkg.version}`)
+}
+
 const [client, css, html, ui, template] = await Promise.all([
   read('client.js'),
   read('ui.css'),
