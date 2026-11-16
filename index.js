@@ -14,7 +14,7 @@ import path from 'node:path'
 import dns from 'node:dns'
 import { fileURLToPath } from 'node:url'
 
-const VERSION = '1.8.4'
+const VERSION = '1.8.5'
 const BALANCE_URL = 'https://api.deepseek.com/user/balance'
 const BALANCE_TTL_MS = 30_000
 const BALANCE_TIMEOUT_MS = 8_000
@@ -117,6 +117,13 @@ function round8(value) {
   return Math.round((Number(value) || 0) * 1e8) / 1e8
 }
 
+// Balance currencies come from outside the host. Keep only plain ISO-style codes
+// so nothing but a currency code can ever reach the browser.
+function currencyCode(value) {
+  const code = String(value == null ? '' : value).trim().toUpperCase()
+  return /^[A-Z]{2,8}$/.test(code) ? code : ''
+}
+
 function orderBalances(balances) {
   const rank = (currency) => currency === 'CNY' ? 0 : currency === 'USD' ? 1 : 2
   return balances.sort((left, right) => rank(left.currency) - rank(right.currency)
@@ -132,6 +139,17 @@ function withTimeout(promise, ms) {
   return Promise.race([promise, timeout]).finally(() => {
     if (timer) clearTimeout(timer)
   })
+}
+
+// A forked session's log starts with a copy of the parent's events, which the
+// parent already paid for. `inheritedEventCount` is the exact fork cut (see
+// @deepseek-ai/dsh-session Session#inheritedEventCount), so everything below it
+// belongs to the parent's ledger entry, not this one.
+function isInheritedEvent(seq, session) {
+  const cut = Number(session && session.inheritedEventCount)
+  const index = Number(seq)
+  if (!Number.isFinite(cut) || cut <= 0 || !Number.isFinite(index)) return false
+  return index < cut
 }
 
 function tokenCost(usage, model, at) {
@@ -192,6 +210,12 @@ function readLedger() {
   if (!Number.isFinite(Number(ledger.seq))) ledger.seq = 0
   if (!ledger.lastTurn || typeof ledger.lastTurn !== 'object') ledger.lastTurn = null
   if (!Array.isArray(ledger.currencies)) ledger.currencies = []
+  if (ledger.day !== dayKey(Date.now())) {
+    // Roll the day first: the wallet checks below must compare against today,
+    // otherwise a restart after midnight keeps yesterday's observed spend.
+    ledger.day = dayKey(Date.now())
+    ledger.events = {}
+  }
   if (!ledger.wallet || typeof ledger.wallet !== 'object' || Array.isArray(ledger.wallet)) {
     ledger.wallet = { day: ledger.day, source: '', since: 0, last: {}, spent: {}, toppedUp: {} }
   }
@@ -200,10 +224,6 @@ function readLedger() {
   if (!ledger.wallet.toppedUp || typeof ledger.wallet.toppedUp !== 'object') ledger.wallet.toppedUp = {}
   if (ledger.wallet.day !== ledger.day) {
     ledger.wallet = { day: ledger.day, source: '', since: 0, last: {}, spent: {}, toppedUp: {} }
-  }
-  if (ledger.day !== dayKey(Date.now())) {
-    ledger.day = dayKey(Date.now())
-    ledger.events = {}
   }
   // Derive the displayed totals from the event ledger so a partially written
   // file cannot leave spend and events out of sync.
@@ -323,31 +343,41 @@ export function apply(ctx) {
   }
 
   function noteObservedCurrencies(balances) {
-    let changed = false
+    // Rebuild from the live response. A currency that no longer holds money must
+    // stop driving the dual-currency display.
+    const next = new Set()
     for (const row of Array.isArray(balances) ? balances : []) {
       if (!row || !row.currency) continue
-      const currency = String(row.currency).toUpperCase()
-      if (!currency || observedCurrencies.has(currency)) continue
-      observedCurrencies.add(currency)
-      changed = true
+      if (!(Number(row.amount) > 0)) continue
+      const currency = currencyCode(row.currency)
+      if (currency) next.add(currency)
     }
-    if (changed) {
-      ledger.currencies = [...observedCurrencies]
-      scheduleSave()
-    }
+    if (!next.size) return
+    const changed = next.size !== observedCurrencies.size
+      || [...next].some((currency) => !observedCurrencies.has(currency))
+    if (!changed) return
+    observedCurrencies.clear()
+    for (const currency of next) observedCurrencies.add(currency)
+    ledger.currencies = [...observedCurrencies]
+    scheduleSave()
   }
 
   function observeWallet(balances, source, at) {
     const wallet = ledger.wallet
     if (!wallet) return
     const timestamp = Number(at) || Date.now()
-    if (wallet.source && source && wallet.source !== source) {
+    const lastAt = Number(wallet.lastAt) || 0
+    const switched = !!(wallet.source && source && wallet.source !== source)
+    // One failed key lookup falls back to the account source for a minute. Only a
+    // real source switch, after a long gap, may reset the observed-spend history.
+    if (switched && timestamp - lastAt > 300_000) {
       wallet.last = {}
       wallet.spent = {}
       wallet.toppedUp = {}
       wallet.since = timestamp
     }
     wallet.source = source || wallet.source || ''
+    wallet.lastAt = timestamp
     if (!wallet.since) wallet.since = timestamp
     const current = {}
     for (const row of Array.isArray(balances) ? balances : []) {
@@ -359,7 +389,9 @@ export function apply(ctx) {
     }
     for (const [currency, amount] of Object.entries(current)) {
       const previous = Number(wallet.last[currency])
-      if (Number.isFinite(previous)) {
+      // Two sources can report different totals for the same wallet. Their gap is
+      // not spend, so a switched observation only re-baselines.
+      if (Number.isFinite(previous) && !switched) {
         const delta = round8(amount - previous)
         if (delta < 0) {
           wallet.spent[currency] = round8(Number(wallet.spent[currency] || 0) + Math.abs(delta))
@@ -429,7 +461,11 @@ export function apply(ctx) {
     const turn = Number(data.turn)
     if (!Number.isFinite(turn)) return 0
     const at = Number(event.time) || Date.now()
+    if (isInheritedEvent(event && event.seq, session)) return 0
     const model = data.message && data.message.source ? String(data.message.source.model || '') : ''
+    // Only the DeepSeek wallet pays for DeepSeek models. Other providers are not
+    // ours to price, and counting them makes both cost cards wrong.
+    if (model && !model.startsWith('deepseek-')) return 0
     const measured = tokenCost(tokenUsage, model, at)
     if (measured.cost <= 0) return 0
     usage.cost = round8(Number(usage.cost) + measured.cost)
@@ -483,7 +519,9 @@ export function apply(ctx) {
     try {
       events = seq > 0 ? session.snapshotEvents(0, seq) : session.snapshotEvents()
     } catch (err) {
-      events = []
+      // Keep whatever this session already accumulated. Replacing it with an empty
+      // entry would show a live chat as having spent nothing until restart.
+      return
     }
     for (const event of events) {
       const type = event && event.type
@@ -731,7 +769,7 @@ export function apply(ctx) {
       if (!info) continue
       const amount = Number(info.total_balance)
       if (!Number.isFinite(amount)) continue
-      const currency = String(info.currency || 'CNY').toUpperCase()
+      const currency = currencyCode(info.currency) || 'CNY'
       byCurrency.set(currency, (byCurrency.get(currency) || 0) + amount)
     }
     const balances = orderBalances([...byCurrency].map(([currency, amount]) => ({ currency, amount: round8(amount) })))
@@ -778,7 +816,7 @@ export function apply(ctx) {
     if (!wallets.length) return { ok: false, reason: 'account has no balance wallets' }
     const byCurrency = new Map()
     for (const wallet of wallets) {
-      const currency = String(wallet.currency || 'CNY').toUpperCase()
+      const currency = currencyCode(wallet.currency) || 'CNY'
       byCurrency.set(currency, (byCurrency.get(currency) || 0) + Number(wallet.balance))
     }
     const balances = orderBalances([...byCurrency].map(([currency, amount]) => ({ currency, amount: round8(amount) })))
