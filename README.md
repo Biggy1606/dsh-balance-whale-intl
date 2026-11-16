@@ -164,4 +164,4 @@ Upstream project and original concept: [MeteorNOX/DeepSeek-Balance-Whale-Widget]
 
 ## Version
 
-`1.8.8`
+`1.8.9`

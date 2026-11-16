@@ -32,20 +32,24 @@ if (template.includes('"@@BW_CSS@@"') === false) fail('template lost its CSS pla
 if (!client.includes(`id: '${pkg.name}'`)) fail('client module id does not match package name')
 if (client.includes('@@BW_')) fail('client contains unresolved placeholders')
 
-const lines = client.split('\n')
-const cssLine = lines.find((line) => line.startsWith('    const CSS = '))
-const htmlLine = lines.find((line) => line.startsWith('    const HTML = '))
-if (!cssLine || !htmlLine) fail('client is missing embedded CSS or HTML')
-const embeddedCss = JSON.parse(cssLine.slice('    const CSS = '.length).replace(/;$/, ''))
-const embeddedHtml = JSON.parse(htmlLine.slice('    const HTML = '.length).replace(/;$/, ''))
-if (embeddedCss !== css) fail('client CSS is stale; run npm run build')
-if (embeddedHtml !== html) fail('client HTML is stale; run npm run build')
+// Rebuild the bundle in memory with exactly the substitutions scripts/build.mjs
+// performs, then compare the whole string. Comparing the full output (instead of
+// slicing sentinels back out of client.js) also catches a change to the template
+// itself, and cannot be fooled by placeholder text appearing in ui.js or ui.html.
+function replaceOnce(source, needle, value, label) {
+  const first = source.indexOf(needle)
+  if (first === -1) fail(`client.template.js is missing the ${label} placeholder`)
+  if (source.indexOf(needle, first + needle.length) !== -1) {
+    fail(`client.template.js has a duplicate ${label} placeholder`)
+  }
+  return source.replace(needle, () => value)
+}
 
-const uiStart = client.indexOf('/* Balance Whale — client UI controller.')
-const widgetStart = client.indexOf('\n    function Widget() {')
-if (uiStart < 0 || widgetStart < 0 || widgetStart <= uiStart) fail('cannot locate embedded UI')
-const embeddedUi = client.slice(uiStart, widgetStart).replace(/\s+$/, '')
-if (embeddedUi !== ui.replace(/\s+$/, '')) fail('client UI is stale; run npm run build')
+let expected = replaceOnce(template, '"@@BW_CSS@@"', JSON.stringify(css), 'CSS')
+expected = replaceOnce(expected, '"@@BW_HTML@@"', JSON.stringify(html), 'HTML')
+expected = replaceOnce(expected, '/* @@BW_UI@@ */', ui.replace(/\s+$/, ''), 'UI')
+if (expected.includes('@@BW_')) fail('rebuilt bundle contains unresolved placeholders')
+if (expected !== client) fail('client.js is stale; run npm run build')
 
 for (const file of ['locale/en.json', 'locale/zh.json']) {
   const meta = JSON.parse(await read(file))

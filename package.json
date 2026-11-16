@@ -1,6 +1,6 @@
 {
   "name": "dsh-balance-whale-intl",
-  "version": "1.8.8",
+  "version": "1.8.9",
   "description": "English-first Balance Whale widget for the DSH Web UI: live wallet balance, real token usage, turn costs, sounds, and an English/Simplified Chinese settings panel.",
   "keywords": [
     "dsh",
@@ -39,7 +39,9 @@
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "test": "node scripts/test.mjs && node scripts/test-peak.mjs",
+    "prepublishOnly": "npm run check"
   },
   "repository": {
     "type": "git",

@@ -13,7 +13,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const VERSION = '1.8.8'
+const VERSION = '1.8.9'
 const BALANCE_URL = 'https://api.deepseek.com/user/balance'
 const BALANCE_TTL_MS = 30_000
 const BALANCE_TIMEOUT_MS = 8_000
@@ -1174,4 +1174,17 @@ export function apply(ctx) {
     if (typeof timer.unref === 'function') timer.unref()
     return () => clearInterval(timer)
   }, 'balance-whale: balance refresh')
+}
+
+// Test surface for scripts/test.mjs. Not part of the plugin contract.
+export const __test = {
+  currencyCode,
+  dayKey,
+  emptyLedger,
+  isInheritedEvent,
+  isPeakAt,
+  nextPeakChange,
+  priceFor,
+  readLedger,
+  tokenCost,
 }
