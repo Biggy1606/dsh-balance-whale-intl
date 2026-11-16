@@ -32,7 +32,7 @@ function formatUntil(nextAt, now, language) {
 function mountBalanceWhale(root) {
   "use strict";
 
-  const VERSION = "1.8.9";
+  const VERSION = "1.8.10";
   const STORAGE_KEY = "balance-whale.ui.v2";
   const OLD_PREFS_KEY = "balance-whale.prefs.v1";
   const OPEN_KEY = "balance-whale.open.v2";
@@ -371,10 +371,9 @@ function mountBalanceWhale(root) {
     orbY: null,
   };
 
-  const overrides = (typeof window !== "undefined" && window.__BALANCE_WHALE_ASSETS__) || {};
   const ASSETS = {
-    whale: overrides.whale || asset("/balance-whale/whale.png"),
-    icon: overrides.icon || asset("/balance-whale/icon.png"),
+    whale: asset("/balance-whale/whale.png"),
+    icon: asset("/balance-whale/icon.png"),
     press: asset("/balance-whale/press.mp3"),
     release: asset("/balance-whale/release.mp3"),
     duck: asset("/balance-whale/press-fx1.mp3"),
@@ -491,11 +490,9 @@ function mountBalanceWhale(root) {
   let activeTab = "wallet";
   let panelOpen = true;
   let loading = false;
-  let pending = null;
   let pendingKey = "";
   let dismissedWait = "";
   let seenSeq = null;
-  let noticeTimer = 0;
   let autoCloseTimer = 0;
   let statusTimer = 0;
   let easeTimer = 0;
@@ -770,9 +767,6 @@ function mountBalanceWhale(root) {
     });
   }
   function updateSoundState() {
-    els.volume.disabled = false;
-    els.pressSound.disabled = false;
-    els.turnSound.disabled = false;
     updatePreviewState();
   }
   function updateMirror() {
@@ -1118,8 +1112,6 @@ function mountBalanceWhale(root) {
   }
 
   function hideNotice() {
-    window.clearTimeout(noticeTimer);
-    noticeTimer = 0;
     notice.hidden = true;
     notice.classList.remove("is-wait");
   }
@@ -1290,7 +1282,6 @@ function mountBalanceWhale(root) {
     } else if (!nextKey) {
       pendingKey = "";
     }
-    pending = next;
     if (!next) {
       if (!notice.hidden && notice.classList.contains("is-wait")) hideNotice();
       return;
@@ -1687,7 +1678,6 @@ function mountBalanceWhale(root) {
     stopped = true;
     window.clearInterval(stateTimer);
     window.clearInterval(waitTimer);
-    window.clearTimeout(noticeTimer);
     window.clearTimeout(autoCloseTimer);
     window.clearTimeout(statusTimer);
     window.clearTimeout(easeTimer);
