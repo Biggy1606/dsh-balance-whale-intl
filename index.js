@@ -13,7 +13,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const VERSION = '1.8.7'
+const VERSION = '1.8.8'
 const BALANCE_URL = 'https://api.deepseek.com/user/balance'
 const BALANCE_TTL_MS = 30_000
 const BALANCE_TIMEOUT_MS = 8_000
@@ -33,7 +33,9 @@ const PRICES = {
 }
 
 // DeepSeek off-peak rule: weekends and Chinese public holidays are all-day valley.
-// 2026 dates are listed so the peak badge stays correct through the year.
+// Source: 国办发明电〔2026〕10号 for 2027, 国办发明电〔2025〕号 for 2026.
+// Add the next year's dates here when the State Council publishes them, or the
+// widget will quote peak prices on a statutory holiday.
 const HOLIDAYS = new Set([
   '2026-01-01', '2026-01-02', '2026-01-03',
   '2026-02-15', '2026-02-16', '2026-02-17', '2026-02-18', '2026-02-19',
@@ -44,6 +46,15 @@ const HOLIDAYS = new Set([
   '2026-09-25', '2026-09-26', '2026-09-27',
   '2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04',
   '2026-10-05', '2026-10-06', '2026-10-07',
+  '2027-01-01', '2027-01-02', '2027-01-03',
+  '2027-02-05', '2027-02-06', '2027-02-07', '2027-02-08', '2027-02-09',
+  '2027-02-10', '2027-02-11', '2027-02-12', '2027-02-13',
+  '2027-04-03', '2027-04-04', '2027-04-05',
+  '2027-05-01', '2027-05-02', '2027-05-03', '2027-05-04', '2027-05-05',
+  '2027-06-09',
+  '2027-09-15',
+  '2027-10-01', '2027-10-02', '2027-10-03', '2027-10-04',
+  '2027-10-05', '2027-10-06', '2027-10-07',
 ])
 const WEEKEND_VALLEY_FROM_SEC = Math.floor(Date.UTC(2026, 7, 22, 16, 0, 0) / 1000)
 

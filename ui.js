@@ -32,7 +32,7 @@ function formatUntil(nextAt, now, language) {
 function mountBalanceWhale(root) {
   "use strict";
 
-  const VERSION = "1.8.7";
+  const VERSION = "1.8.8";
   const STORAGE_KEY = "balance-whale.ui.v2";
   const OLD_PREFS_KEY = "balance-whale.prefs.v1";
   const OPEN_KEY = "balance-whale.open.v2";
