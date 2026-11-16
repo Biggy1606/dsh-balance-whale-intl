@@ -14,7 +14,7 @@ import path from 'node:path'
 import dns from 'node:dns'
 import { fileURLToPath } from 'node:url'
 
-const VERSION = '1.8.5'
+const VERSION = '1.8.6'
 const BALANCE_URL = 'https://api.deepseek.com/user/balance'
 const BALANCE_TTL_MS = 30_000
 const BALANCE_TIMEOUT_MS = 8_000
@@ -994,9 +994,26 @@ export function apply(ctx) {
     }, usagePayload())
   }
 
+  const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1', '[::1]'])
+
+  function hostNameOf(value) {
+    const host = String(value == null ? '' : value)
+    if (host.startsWith('[')) {
+      const end = host.indexOf(']')
+      return (end === -1 ? host : host.slice(0, end + 1)).toLowerCase()
+    }
+    const colon = host.indexOf(':')
+    return (colon === -1 ? host : host.slice(0, colon)).toLowerCase()
+  }
+
   function isTrusted(req) {
     const headers = (req && req.headers) || {}
     if (String(headers['sec-fetch-site'] || '').toLowerCase() === 'cross-site') return false
+    // DSH only answers its own API for a loopback or bind-address Host. A request
+    // that arrived on loopback but carries a foreign Host name is DNS rebinding.
+    const localAddress = String((req && req.socket && req.socket.localAddress) || '')
+    const onLoopback = localAddress === '127.0.0.1' || localAddress === '::1' || localAddress.startsWith('127.')
+    if (onLoopback && headers.host && !LOOPBACK_HOSTS.has(hostNameOf(headers.host))) return false
     const origin = headers.origin
     if (typeof origin === 'string' && origin && origin !== 'null') {
       try {
@@ -1122,15 +1139,16 @@ export function apply(ctx) {
         sendJson(res, 405, { ok: false, error: 'method not allowed' })
         return
       }
+      if (req.method === 'HEAD') {
+        // A HEAD must not trigger a billed balance lookup.
+        res.writeHead(200, JSON_HEADERS)
+        res.end()
+        return
+      }
       try {
         const url = new URL(req.url || '/', 'http://localhost')
         const force = url.searchParams.get('refresh') === '1'
         const body = await snapshot(force)
-        if (req.method === 'HEAD') {
-          res.writeHead(200, JSON_HEADERS)
-          res.end()
-          return
-        }
         sendJson(res, 200, body)
       } catch (err) {
         sendJson(res, 200, {
