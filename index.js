@@ -14,7 +14,7 @@ import path from 'node:path'
 import dns from 'node:dns'
 import { fileURLToPath } from 'node:url'
 
-const VERSION = '1.8.3'
+const VERSION = '1.8.4'
 const BALANCE_URL = 'https://api.deepseek.com/user/balance'
 const BALANCE_TTL_MS = 30_000
 const BALANCE_TIMEOUT_MS = 8_000
@@ -96,22 +96,6 @@ function nextPeakChange(ts) {
   return null
 }
 
-function clockLabel(ts) {
-  const d = beijingDate(ts)
-  const hh = String(d.getUTCHours()).padStart(2, '0')
-  const mm = String(d.getUTCMinutes()).padStart(2, '0')
-  const diff = Math.round((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
-    - Date.UTC(
-      beijingDate(Date.now()).getUTCFullYear(),
-      beijingDate(Date.now()).getUTCMonth(),
-      beijingDate(Date.now()).getUTCDate(),
-    )) / 86_400_000)
-  if (diff === 0) return `${hh}:${mm}`
-  if (diff === 1) return `tomorrow ${hh}:${mm}`
-  const name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getUTCDay()]
-  return `${name} ${hh}:${mm}`
-}
-
 function peakInfo() {
   const now = Date.now()
   const nextAt = nextPeakChange(now)
@@ -121,7 +105,6 @@ function peakInfo() {
     weekend: bj.getUTCDay() === 0 || bj.getUTCDay() === 6,
     holiday: HOLIDAYS.has(dayKey(now)),
     nextAt,
-    nextLabel: nextAt ? clockLabel(nextAt) : '',
   }
 }
 
